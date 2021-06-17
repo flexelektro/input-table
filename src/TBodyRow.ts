@@ -67,11 +67,14 @@ export class TBodyRow extends LitElement{
     }
     .table-cell-textarea {
       border: none;
-      position: absolute;
+      position: relative;
       top: 0;
       left: 2px;
       right: 2px;
-      width: calc(100% - 6px)
+      width: calc(100% - 6px);
+      height: auto;
+
+      resize: both;
 
     }
   `;
@@ -127,6 +130,8 @@ export class TBodyRow extends LitElement{
     const row = this.index;
 
     // <textarea class='table-cell-textarea'>${celldata}</textarea>
+    //  <span style='visibility: hidden'>${ celldata }</span>
+    // <input @input='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-input' type='text' value='${ celldata }'>
 
     return html`
       <div class='empty'>
@@ -143,7 +148,8 @@ export class TBodyRow extends LitElement{
         return html`
           <div class='table-cell'>
 
-            <input @change='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-input' type='text' value='${ celldata }'>
+            <textarea @input='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-textarea'>${celldata}</textarea>
+
 
             ${ this.isLastIndex === "true" ? html`
               <span class='centered'>

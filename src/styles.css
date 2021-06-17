@@ -1,0 +1,10 @@
+.fx-input-table {
+  font: 400 13.3333px Arial;
+}
+
+.fx-table {
+  display: table;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 15px;
+}

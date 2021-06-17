@@ -11,35 +11,28 @@ window.customElements.define('t-top-row', TopRow);
 window.customElements.define('t-body-row', TBodyRow);
 window.customElements.define('t-btn', MicroButton);
 
+
 export class InputTable extends LitElement{
-  static styles = css`
-    :host {
-      font: 400 13.3333px Arial;
-    }
 
-    th {
-      border: 3px solid red;
-    }
+  protected createRenderRoot(): Element | ShadowRoot {
+    return this
+  }
 
-    .fx-table {
-      display: table;
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 15px;
-    }
-
-  `;
-
-
-  private controller = new TableController(this)
+  private controller = new TableController(this);
+  private formData: FormData;
 
   constructor(){
     super();
+
+    this.formData = new FormData();
+
     this.addEventListener("ADD_COL" as any, this.controller.addCol.bind(this.controller))
     this.addEventListener("ADD_ROW" as any, this.controller.addRow.bind(this.controller))
     this.addEventListener("REMOVE_COL" as any, this.controller.removeCol.bind(this.controller))
     this.addEventListener("REMOVE_ROW" as any, this.controller.removeRow.bind(this.controller))
     this.addEventListener("UPDATE_FIELD" as any, this.controller.updateField.bind(this.controller))
+
+
 
     this.controller.headers = ["Name","Alter","Beschreibung","Power","Zusatz","Schnufatz"];
     this.controller.data = [
@@ -49,16 +42,23 @@ export class InputTable extends LitElement{
 
   }
 
+  @query(".fx-input-table")
+  $fullelement?: HTMLDivElement;
+
   @query(".fx-table")
   $table?: HTMLDivElement;
 
   @property()
   columns: string = "";
 
+  @property()
+  name: string = "";
+
   firstUpdated(map: any){
     if(this.columns){
       this.controller.headers = JSON.parse(this.columns) as string[];
     }
+
   }
 
   renderTopRow(){
@@ -100,10 +100,24 @@ export class InputTable extends LitElement{
 
 
   render(){
+
+
+
     return html`
+      <style>
+        .fx-input-table {
+          font: 400 13.3333px Arial;
+        }
 
-      <div class='fx-input-table'>
-
+        .fx-table {
+          display: table;
+          border-collapse: collapse;
+          width: 100%;
+          margin-top: 15px;
+        }
+      </style>
+      <div class='fx-input-table' style=''>
+        <input type='hidden' name='${this.name}' value=${JSON.stringify(this.controller.data)}>
         <label>
           <input @change=${ this.toggleHasHeader } type='checkbox' checked=${ this.controller._showHeader }>
           <span>has header</span>

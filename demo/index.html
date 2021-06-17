@@ -16,20 +16,25 @@
   </style>
 </head>
 <body>
-  <div id="demo"></div>
+  <div id="demo">
+
+
+    <form action='/' method='get' >
+
+      <input-table name='meinfeld'></input-table>
+
+
+      <button type='submit'>Submitty</button>
+
+    </form>
+
+
+
+  </div>
 
   <script type="module">
     import { html, render } from 'lit-html';
     import '../dist/input-table.js';
-
-    const title = 'Hello owc World!';
-
-    render(
-      html`
-        <input-table .title=${title}></input-table>
-      `,
-      document.querySelector('#demo')
-    );
   </script>
 </body>
 </html>
