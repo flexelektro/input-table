@@ -12,8 +12,8 @@ export class TBodyRow extends LitElement{
     .table-cell {
       display: table-cell;
       border: 1px solid #ccc;
-      padding: 3px;
-
+      padding: 0px;
+      position: relative;
     }
 
     .empty {
@@ -24,20 +24,67 @@ export class TBodyRow extends LitElement{
       position: relative;
       background: #eee;
     }
-    .t-body-row-index{
-      color:#666;
-      font-size:12px;
-      width:100%;
+
+    .t-body-row-index {
+      color: #666;
+      font-size: 12px;
+      width: 100%;
       display: inline-block;
       text-align: right;
+    }
+
+    span.centered {
+      display: flex;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      justify-content: center;
+      align-items: center;
+      background: red;
+    }
+
+    span.vcentered {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .table-cell-input {
+      border: none;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 2px;
+      right: 2px;
+      width: calc(100% - 6px)
+
+    }
+    .table-cell-textarea {
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 2px;
+      right: 2px;
+      width: calc(100% - 6px)
+
     }
   `;
 
   @property()
   row: string = "";
 
-  @property({type:Number})
+  @property({ type: Number })
   index: number = 0;
+
+  @property({ type: String })
+  isLastIndex?: "true" | "false" = "false"
+
 
   addRow(pos: number){
     const addEvent = new CustomEvent("ADD_ROW", {
@@ -48,26 +95,71 @@ export class TBodyRow extends LitElement{
     this.dispatchEvent(addEvent);
   }
 
+  removeCol(pos: number){
+    const removeEvent = new CustomEvent("REMOVE_COL", {
+      detail: { position: pos },
+      bubbles: true,
+      composed: true
+    })
+    this.dispatchEvent(removeEvent);
+  }
+
+  removeRow(pos: number){
+    const removeEvent = new CustomEvent("REMOVE_ROW", {
+      detail: { position: pos },
+      bubbles: true,
+      composed: true
+    })
+    this.dispatchEvent(removeEvent);
+  }
+
+  updateField(e:InputEvent,row:number,col:number){
+    const addEvent = new CustomEvent("UPDATE_FIELD", {
+      detail: { value: (e.target as HTMLInputElement)?.value || "", row,col },
+      bubbles: true,
+      composed: true
+    })
+    this.dispatchEvent(addEvent);
+  }
+
   render(){
-    const data = JSON.parse(this.row)
-    console.log("IDX",typeof this.index)
+    const data = JSON.parse(this.row);
+    const row = this.index;
+
+    // <textarea class='table-cell-textarea'>${celldata}</textarea>
+
     return html`
       <div class='empty'>
-        ${this.index == 0 ? html`
-         <t-btn @click='${ () => this.addRow((this.index)) }' style='top:0px;left:0px;'>+</t-btn>
-        ` : null}
-
-        <span class='t-body-row-index'> ${this.index}</span>
-
-
+        ${ this.index == 0 ? html`
+          <t-btn @click='${ () => this.addRow((this.index)) }' style='top:0px;left:0px;'>+</t-btn>
+        ` : null }
+        <span class='t-body-row-index'> ${ this.index }</span>
         <t-btn @click='${ () => this.addRow(this.index + 1) }' style='bottom:-14px;left:0px;'>+</t-btn>
-
       </div>
-      ${ data.map((celldata: any, idx: any) => html`
-        <div class='table-cell'>
-          ${ celldata }
-        </div>
-      `) }
+
+
+      ${ data.map((celldata: any, idx: number) => {
+        const col = idx;
+        return html`
+          <div class='table-cell'>
+
+            <input @change='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-input' type='text' value='${ celldata }'>
+
+            ${ this.isLastIndex === "true" ? html`
+              <span class='centered'>
+          <t-btn title='remove column' @click='${ () => this.removeCol(idx) }' style='transform:translate(0px, 15px)'>–</t-btn>
+        </span>
+            ` : null }
+
+            ${ (idx === data.length - 1) ? html`
+              <span class='vcentered'>
+          <t-btn title='remove row' @click='${ () => this.removeRow(this.index) }' style='transform:translate(0px, 0px)'>–</t-btn>
+        </span>
+            ` : null }
+
+          </div>
+        `
+      }) }
     `;
   }
 }

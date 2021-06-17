@@ -13,7 +13,8 @@
     "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
     "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
     "storybook": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds -c .storybook/server.mjs\"",
-    "storybook:build": "tsc && build-storybook"
+    "storybook:build": "tsc && build-storybook",
+    "dev": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds --node-resolve --watch --open demo/\""
   },
   "dependencies": {
     "lit": "^2.0.0-rc.2",

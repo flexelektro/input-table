@@ -2,7 +2,7 @@ import { html, css, LitElement } from 'lit';
 import { property, state, query } from 'lit/decorators.js';
 import { THead } from './THead';
 import { TopRow } from './TopRow';
-import {TBodyRow } from './TBodyRow';
+import { TBodyRow } from './TBodyRow';
 import { TableController } from './TableController'
 import { MicroButton } from './MicroButton';
 
@@ -14,6 +14,7 @@ window.customElements.define('t-btn', MicroButton);
 export class InputTable extends LitElement{
   static styles = css`
     :host {
+      font: 400 13.3333px Arial;
     }
 
     th {
@@ -24,8 +25,9 @@ export class InputTable extends LitElement{
       display: table;
       border-collapse: collapse;
       width: 100%;
-      margin-top:15px;
+      margin-top: 15px;
     }
+
   `;
 
 
@@ -33,8 +35,18 @@ export class InputTable extends LitElement{
 
   constructor(){
     super();
-    this.addEventListener("ADD_COL" as any,this.addCol)
-    this.addEventListener("ADD_ROW" as any,this.addRow)
+    this.addEventListener("ADD_COL" as any, this.controller.addCol.bind(this.controller))
+    this.addEventListener("ADD_ROW" as any, this.controller.addRow.bind(this.controller))
+    this.addEventListener("REMOVE_COL" as any, this.controller.removeCol.bind(this.controller))
+    this.addEventListener("REMOVE_ROW" as any, this.controller.removeRow.bind(this.controller))
+    this.addEventListener("UPDATE_FIELD" as any, this.controller.updateField.bind(this.controller))
+
+    this.controller.headers = ["Name","Alter","Beschreibung","Power","Zusatz","Schnufatz"];
+    this.controller.data = [
+      ["Yenny", 50, "Eine wunderbare Frau mit tollem Hintern"],
+      ["Nikolas", 30, "Eine völliger Versager mit Drogenproblem", "80"]
+    ];
+
   }
 
   @query(".fx-table")
@@ -49,20 +61,6 @@ export class InputTable extends LitElement{
     }
   }
 
-  addCol(e:CustomEvent){
-    e.stopPropagation();
-    e.cancelBubble = true;
-    console.log("Helau",e.detail)
-    this.controller.addCol(e.detail.position)
-  }
-
-  addRow(e:CustomEvent){
-    e.stopPropagation();
-    e.cancelBubble = true;
-
-    this.controller.addRow(e.detail.position)
-  }
-
   renderTopRow(){
     return html`
       <t-top-row cols='${ JSON.stringify(this.controller.headers) }'></t-top-row>
@@ -70,26 +68,34 @@ export class InputTable extends LitElement{
   }
 
   renderTHead(){
-    if(this.controller.hasHeader){
+
+    if(this.controller.showHeader){
       return html`
-      <t-head cols='${ JSON.stringify(this.controller.headers) }'/>
-    `;
+        <t-head cols='${ JSON.stringify(this.controller.headers) }'/>
+      `;
     }
     return null;
 
   }
 
   renderBody(){
+    const data = this.controller.data;
+
     return html`
 
-      ${ this.controller.data.map((row,idx) => html`
-          <t-body-row index=${idx} row="${JSON.stringify(row)}" />
-        `) }
+      ${ data.map((row, idx) => {
+
+        return html`
+          <t-body-row isLastIndex=${(idx + 1) === (data.length) } index='${ idx }' row='${ JSON.stringify(row) }'/>
+        `
+      }) }
+
+
     `
   }
 
-  toggleHasHeader(e:InputEvent){
-    this.controller.hasHeader = ((e.target as HTMLInputElement).checked);
+  toggleHasHeader(e: InputEvent){
+    this.controller.showHeader = ((e.target as HTMLInputElement).checked);
   }
 
 
@@ -99,7 +105,7 @@ export class InputTable extends LitElement{
       <div class='fx-input-table'>
 
         <label>
-          <input @change=${this.toggleHasHeader} type='checkbox' checked=${this.controller._hasHeader}>
+          <input @change=${ this.toggleHasHeader } type='checkbox' checked=${ this.controller._showHeader }>
           <span>has header</span>
         </label>
 

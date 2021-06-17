@@ -1,5 +1,7 @@
 import { ReactiveController, ReactiveControllerHost } from 'lit';
 
+type IDataRow = (string | number)[];
+type IData = IDataRow[];
 
 export class TableController implements ReactiveController{
   host: ReactiveControllerHost;
@@ -8,17 +10,13 @@ export class TableController implements ReactiveController{
     (this.host = host).addController(this);
   }
 
-  public _hasHeader: boolean = true;
-
+  public _showHeader: boolean = true;
   private _headers: (string | number)[] = [];
+  private _data: IData = [];
 
-  private _data: (string | number)[][] = this.cleanupData([
-    ["Yenny", 50, "Eine wunderbare Frau mit tollem Hintern"],
-    ["Nikolas", 30, "Eine völliger Versager mit Drogenproblem", "80", "Ist polizeilich auffällig"]
-  ])
-
-  set headers(values: (string | number)[]){
-    this._headers = this.cleanUpHeaders(values);
+  set headers(values: IDataRow){
+    this._headers = values;
+    this.cleanUp();
     this.host.requestUpdate();
   }
 
@@ -26,17 +24,9 @@ export class TableController implements ReactiveController{
     return this._headers;
   }
 
-  set hasHeader(val: boolean){
-    this._hasHeader = val;
-    this.host.requestUpdate();
-  }
-
-  get hasHeader(){
-    return this._hasHeader;
-  }
-
-  set data(data){
-    this._data = this.cleanupData(data);
+  set data(data:IData){
+    this._data = data;
+    this.cleanUp();
     this.host.requestUpdate();
   }
 
@@ -44,37 +34,24 @@ export class TableController implements ReactiveController{
     return this._data;
   }
 
+  get showHeader(){
+    return this._showHeader;
+  }
+
+  set showHeader(val: boolean){
+    this._showHeader = val;
+    this.host.requestUpdate();
+  }
+
   get colCount(){
-    return this.countCols(this._data);
+    return Math.max(this.maxColLength(this._data),this.headers.length);
   }
 
   get rowCount(){
     return this._data.length || 0;
   }
 
-  addCol(pos: number){
-
-    this.data = this.data.map(row => {
-      const newrow = (row.slice());
-      newrow.splice(pos, 0, "")
-      return newrow
-    })
-
-    this.headers = (() => {
-      const headers = this.headers.slice();
-      headers.splice(pos, 0, "")
-      return headers
-    })()
-
-  }
-
-  addRow(pos: number){
-    const newData = this._data.slice();
-    newData.splice(pos, 0, Array(this.colCount))
-    this.data = newData;
-  }
-
-  countCols(data: (string | number)[][]){
+  maxColLength(data: IData){
     let max = 0;
     data.forEach(row => {
       max = Math.max(max, row.length);
@@ -82,21 +59,26 @@ export class TableController implements ReactiveController{
     return max;
   }
 
-  cleanupData(data: (string | number)[][]){
-    const max = this.countCols(data);
+  cleanUp(){
+    this._data = this.cleanupData(this._data);
+    this._headers = this.cleanUpHeaders(this._headers)
+    this.host.requestUpdate();
+  }
+
+  cleanupData(data: IData){
+    const max = this.colCount;
     return data.map(row => {
       if(row.length < max){
-        const newRow = row.concat(new Array(max - row.length))
+        const newRow = row.concat(Array.from(new Array(max - row.length),(_:any) => ""))
         return newRow;
       }
       return row;
-
     })
   }
 
-  cleanUpHeaders(val: (string | number)[]){
+  cleanUpHeaders(val: IDataRow){
     if(val.length < this.colCount){
-      const add = new Array(this.colCount - val.length);
+      const add = Array.from(new Array(this.colCount - val.length),(x:any) => "")
       return val.concat(add);
     }
     return val;
@@ -112,5 +94,77 @@ export class TableController implements ReactiveController{
     // Clear the timer when the host is disconnected
   }
 
+
+  /*
+  ** ACTIONS
+   */
+
+
+  addCol(e: CustomEvent){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    const pos = e.detail.position;
+
+
+    this._data = this.data.map(row => {
+      const newrow = (row.slice());
+      newrow.splice(pos, 0, "")
+      return newrow
+    })
+
+    const newHeaders = this._headers.slice();
+    newHeaders.splice(pos,0,"")
+    this._headers = newHeaders
+
+    this.cleanUp();
+  }
+
+  addRow(e: CustomEvent){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    const pos = e.detail.position;
+    const newData = this._data.slice();
+    newData.splice(pos, 0, Array.from(Array(this.colCount),(x:any) => ""))
+    this._data = newData;
+    this.cleanUp();
+  }
+
+  removeCol(e: CustomEvent){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    const pos = e.detail.position;
+    const newData = this._data.slice();
+    newData.forEach((row) => {
+      row.splice(pos, 1);
+    })
+    this._data = newData;
+    const headers = this.headers.slice();
+    headers.splice(pos, 1)
+    this._headers = headers;
+    this.cleanUp();
+  }
+
+  removeRow(e: CustomEvent){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    const pos = e.detail.position;
+    const newData = this._data.slice();
+    newData.splice(pos, 1)
+    this._data = newData;
+    this.cleanUp();
+  }
+
+  updateField(e: CustomEvent){
+    e.stopPropagation();
+    e.cancelBubble = true;
+    const row = e.detail.row;
+    const col = e.detail.col;
+    const value = e.detail.value;
+
+    this._data[row][col] = value;
+
+    this.host.requestUpdate();
+
+  }
 
 }

@@ -10,7 +10,7 @@ export class MicroButton extends LitElement{
       align-content: center;
       background: white;
       border: 1px solid #ccc;
-      border-radius: 7px;
+      border-radius: 14px;
       line-height: 13px;
       position: absolute;
       transform: translate(-7px, -7px);
@@ -22,10 +22,13 @@ export class MicroButton extends LitElement{
   @property()
   style: any;
 
+  @property()
+  title: string = "";
+
 
   render(){
     return html`
-      <slot></slot>
+      <slot title='${this.title}'></slot>
     `
   }
 }
