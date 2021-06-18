@@ -1,13 +1,4 @@
-import { html, css, LitElement, property, state } from 'lit-element';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html';
-
-
-const linebreakToBr = (raw:string|number) => {
-  raw = raw + "";
-  console.log({raw})
-  return raw.replace(/(?:\r\n|\r|\n)/g, '<br/> x ')
-
-}
+import { html, css, LitElement, property } from 'lit-element';
 
 export class TBodyRow extends LitElement{
   static styles = css`
@@ -63,34 +54,25 @@ export class TBodyRow extends LitElement{
       align-items: center;
     }
 
-    .table-cell-input {
+
+    .table-cell-textarea {
       border: none;
       position: absolute;
       top: 0;
       bottom: 0;
       left: 2px;
       right: 2px;
-      width: calc(100% - 6px)
-
-    }
-    .table-cell-textarea {
-      border: none;
-      position: absolute;
-      top: 0;
-      bottom:0;
-      left: 2px;
-      right: 2px;
       width: calc(100% - 6px);
-      height:auto;
+      height: auto;
       max-height: 150px;
       resize: none;
       font: 400 13.3333px Arial;
-      opacity: 1;
-     ;
+      opacity: 1;;
     }
-    .grower{
-      visibility: hidden!important;
-      display:inline-block;
+
+    .grower {
+      visibility: hidden !important;
+      display: inline-block;
       margin: 2px 0;
     }
   `;
@@ -103,6 +85,13 @@ export class TBodyRow extends LitElement{
 
   @property({ type: String })
   isLastIndex?: "true" | "false" = "false"
+
+  @property({
+    converter: (val) => {
+      return val === "true";
+    }
+  })
+  private fixedheader: boolean = false;
 
 
   addRow(pos: number){
@@ -132,23 +121,10 @@ export class TBodyRow extends LitElement{
     this.dispatchEvent(removeEvent);
   }
 
-  updateField(e:InputEvent,row:number,col:number){
-    const addEvent = new CustomEvent("UPDATE_FIELD", {
-      detail: { value: (e.target as HTMLInputElement)?.value || "", row,col },
-      bubbles: true,
-      composed: true
-    })
-    this.dispatchEvent(addEvent);
-  }
-
   render(){
     const data = JSON.parse(this.row);
     const row = this.index;
-
-    // <textarea class='table-cell-textarea'>${celldata}</textarea>
-    //  <span style='visibility: hidden'>${ celldata }</span>
-    // <input @input='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-input' type='text' value='${ celldata }'>
-
+    console.log(this.fixedheader)
     return html`
       <div class='empty'>
         ${ this.index == 0 ? html`
@@ -161,13 +137,11 @@ export class TBodyRow extends LitElement{
 
       ${ data.map((celldata: any, idx: number) => {
         const col = idx;
+
         return html`
-          <div class='table-cell'>
-            <span class="grower" style='visibility: hidden'>${ unsafeHTML( linebreakToBr(celldata)) }</span>
-            <textarea @input='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-textarea'>${celldata}</textarea>
+          <table-cell row=${row} col='${col}' value='${celldata}''>
 
-
-            ${ this.isLastIndex === "true" ? html`
+            ${ (this.isLastIndex === "true" && !this.fixedheader) ? html`
               <span class='centered'>
           <t-btn title='remove column' @click='${ () => this.removeCol(idx) }' style='transform:translate(0px, 15px)'>–</t-btn>
         </span>
@@ -175,11 +149,11 @@ export class TBodyRow extends LitElement{
 
             ${ (idx === data.length - 1) ? html`
               <span class='vcentered'>
-          <t-btn title='remove row' @click='${ () => this.removeRow(this.index) }' style='transform:translate(0px, 0px)'>–</t-btn>
-        </span>
+                <t-btn title='remove row' @click='${ () => this.removeRow(this.index) }' style='transform:translate(0px, 0px)'>–</t-btn>
+              </span>
             ` : null }
 
-          </div>
+          </table-cell>
         `
       }) }
     `;

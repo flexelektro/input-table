@@ -5,12 +5,13 @@ import { TopRow } from './TopRow';
 import { TBodyRow } from './TBodyRow';
 import { TableController } from './TableController'
 import { MicroButton } from './MicroButton';
+import { TableCell } from './TableCell';
 
 window.customElements.define('t-head', THead);
 window.customElements.define('t-top-row', TopRow);
 window.customElements.define('t-body-row', TBodyRow);
 window.customElements.define('t-btn', MicroButton);
-
+window.customElements.define('table-cell', TableCell);
 
 export class InputTable extends LitElement{
 
@@ -30,15 +31,11 @@ export class InputTable extends LitElement{
     this.addEventListener("ADD_ROW" as any, this.controller.addRow.bind(this.controller))
     this.addEventListener("REMOVE_COL" as any, this.controller.removeCol.bind(this.controller))
     this.addEventListener("REMOVE_ROW" as any, this.controller.removeRow.bind(this.controller))
-    this.addEventListener("UPDATE_FIELD" as any, this.controller.updateField.bind(this.controller))
+    this.addEventListener("UPDATED_CELL" as any, this.controller.updateField.bind(this.controller))
+    this.addEventListener("UPDATED_HEADER_CELL" as any, this.controller.updateHeaderField.bind(this.controller))
 
-
-
-    this.controller.headers = ["Name","Alter","Beschreibung","Power","Zusatz","Schnufatz"];
-    this.controller.data = [
-      ["Yenny", 50, "Eine wunderbare Frau mit tollem Hintern"],
-      ["Nikolas", 30, "Eine völliger Versager mit Drogenproblem", "80"]
-    ];
+    this.controller.header = [];
+    this.controller.data = [];
 
   }
 
@@ -49,33 +46,59 @@ export class InputTable extends LitElement{
   $table?: HTMLDivElement;
 
   @property()
-  columns: string = "";
+  header: string = "";
+
+  @property({
+    converter: (attrVal: any) => {
+      return attrVal === "";
+    }
+  })
+  fixedheader?: boolean;
+
+  @property()
+  data: string = "";
 
   @property()
   name: string = "";
 
   firstUpdated(map: any){
-    if(this.columns){
-      this.controller.headers = JSON.parse(this.columns) as string[];
+  }
+
+  public connectedCallback(){
+    super.connectedCallback();
+
+    if(!this.header){
+      this.controller.hasHeader = false;
+    }
+    if(this.header){
+      this.controller.header = JSON.parse(this.header) as string[];
+    }
+
+    if(this.data == ""){
+
+      this.controller.data = [["","",""],["","",""],["","",""]]
+    }
+    if(this.data){
+      this.controller.data = JSON.parse(this.data) as (string|number)[][];
     }
 
   }
 
   renderTopRow(){
+
     return html`
-      <t-top-row cols='${ JSON.stringify(this.controller.headers) }'></t-top-row>
+      <t-top-row hasbuttons=${!this.fixedheader} cols='${ JSON.stringify(this.controller.header) }'></t-top-row>
     `
   }
 
   renderTHead(){
 
-    if(this.controller.showHeader){
+    if(this.controller.hasHeader){
       return html`
-        <t-head cols='${ JSON.stringify(this.controller.headers) }'/>
+        <t-head cols='${ JSON.stringify(this.controller.header) }'/>
       `;
     }
     return null;
-
   }
 
   renderBody(){
@@ -86,23 +109,18 @@ export class InputTable extends LitElement{
       ${ data.map((row, idx) => {
 
         return html`
-          <t-body-row isLastIndex=${(idx + 1) === (data.length) } index='${ idx }' row='${ JSON.stringify(row) }'/>
+          <t-body-row fixedheader='${this.fixedheader}' isLastIndex=${(idx + 1) === (data.length) } index='${ idx }' row='${ JSON.stringify(row) }'/>
         `
       }) }
-
-
     `
   }
 
   toggleHasHeader(e: InputEvent){
-    this.controller.showHeader = ((e.target as HTMLInputElement).checked);
+    this.controller.hasHeader = ((e.target as HTMLInputElement).checked);
   }
 
 
   render(){
-
-
-
     return html`
       <style>
         .fx-input-table {
@@ -118,11 +136,6 @@ export class InputTable extends LitElement{
       </style>
       <div class='fx-input-table' style=''>
         <input type='hidden' name='${this.name}' value=${JSON.stringify(this.controller.data)}>
-        <label>
-          <input @change=${ this.toggleHasHeader } type='checkbox' checked=${ this.controller._showHeader }>
-          <span>has header</span>
-        </label>
-
 
         <div class='fx-table'>
           ${ this.renderTopRow() }

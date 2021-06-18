@@ -10,18 +10,18 @@ export class TableController implements ReactiveController{
     (this.host = host).addController(this);
   }
 
-  public _showHeader: boolean = true;
-  private _headers: (string | number)[] = [];
+  public _hasHeader: boolean = true;
+  private _header: (string | number)[] = [];
   private _data: IData = [];
 
-  set headers(values: IDataRow){
-    this._headers = values;
+  set header(values: IDataRow){
+    this._header = values;
     this.cleanUp();
     this.host.requestUpdate();
   }
 
-  get headers(){
-    return this._headers;
+  get header(){
+    return this._header;
   }
 
   set data(data:IData){
@@ -34,17 +34,17 @@ export class TableController implements ReactiveController{
     return this._data;
   }
 
-  get showHeader(){
-    return this._showHeader;
+  get hasHeader(){
+    return this._hasHeader;
   }
 
-  set showHeader(val: boolean){
-    this._showHeader = val;
+  set hasHeader(val: boolean){
+    this._hasHeader = val;
     this.host.requestUpdate();
   }
 
   get colCount(){
-    return Math.max(this.maxColLength(this._data),this.headers.length);
+    return Math.max(this.maxColLength(this._data),this.header.length);
   }
 
   get rowCount(){
@@ -61,7 +61,7 @@ export class TableController implements ReactiveController{
 
   cleanUp(){
     this._data = this.cleanupData(this._data);
-    this._headers = this.cleanUpHeaders(this._headers)
+    this._header = this.cleanUpHeaders(this._header)
     this.host.requestUpdate();
   }
 
@@ -112,9 +112,9 @@ export class TableController implements ReactiveController{
       return newrow
     })
 
-    const newHeaders = this._headers.slice();
+    const newHeaders = this._header.slice();
     newHeaders.splice(pos,0,"")
-    this._headers = newHeaders
+    this._header = newHeaders
 
     this.cleanUp();
   }
@@ -138,9 +138,9 @@ export class TableController implements ReactiveController{
       row.splice(pos, 1);
     })
     this._data = newData;
-    const headers = this.headers.slice();
+    const headers = this.header.slice();
     headers.splice(pos, 1)
-    this._headers = headers;
+    this._header = headers;
     this.cleanUp();
   }
 
@@ -160,9 +160,18 @@ export class TableController implements ReactiveController{
     const row = e.detail.row;
     const col = e.detail.col;
     const value = e.detail.value;
-
     this._data[row][col] = value;
 
+    this.host.requestUpdate();
+
+  }
+  updateHeaderField(e: CustomEvent){
+    e.stopPropagation();
+    e.cancelBubble = true;
+
+    const col = e.detail.col;
+    const value = e.detail.value;
+    this._header[col] = value;
     this.host.requestUpdate();
 
   }

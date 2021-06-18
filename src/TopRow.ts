@@ -24,6 +24,13 @@ export class TopRow extends LitElement{
   @property({ type: Array })
   private cols: string[] = [];
 
+  @property({
+    converter: (val) => {
+      return val === "true";
+    }
+  })
+  private hasbuttons: boolean = false;
+
   addCol(pos: number){
     const addEvent = new CustomEvent("ADD_COL", {
       detail: { position: pos },
@@ -35,20 +42,30 @@ export class TopRow extends LitElement{
 
   render(){
 
+    const hasButtons = this.hasbuttons;
+
 
     return html`
 
       <div class='emptycell'></div>
       ${ this.cols.map((col, idx: number) => html`
         <div class='table-top-row-cell'>
-          ${ (idx === 0 ? html`
-            <t-btn @click='${ () => this.addCol(0) }' style='top:0;left:0;'>+</t-btn>` : "") }
+          ${ (idx === 0 && hasButtons ? html`
+            <t-btn @click='${ () => this.addCol(0) }' style='top:0;left:0;'>+</t-btn>` : null)
+          }
+
           ${ idx }
-          <t-btn @click='${ () => this.addCol(idx + 1) }' style='top:0;right:-14px;'>+</t-btn>
+
+          ${ hasButtons ? html`
+            <t-btn @click='${ () => this.addCol(idx + 1) }' style='top:0;right:-14px;'>+</t-btn>
+          ` : null }
+
         </div>
       `) }
 
     `;
   }
+
+
 }
 

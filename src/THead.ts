@@ -33,8 +33,8 @@ export class THead extends LitElement{
 
     return html`
         <div class='empty'></div>
-        ${ this.cols.map(col => html`
-          <div class='table-head-column'>
+        ${ this.cols.map((col,idx) => html`
+          <table-cell isheader col='${idx}' value='${col}'>
             ${col}
             </td>
         `) }
