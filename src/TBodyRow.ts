@@ -1,5 +1,13 @@
 import { html, css, LitElement, property, state } from 'lit-element';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html';
 
+
+const linebreakToBr = (raw:string|number) => {
+  raw = raw + "";
+  console.log({raw})
+  return raw.replace(/(?:\r\n|\r|\n)/g, '<br/> x ')
+
+}
 
 export class TBodyRow extends LitElement{
   static styles = css`
@@ -67,15 +75,23 @@ export class TBodyRow extends LitElement{
     }
     .table-cell-textarea {
       border: none;
-      position: relative;
+      position: absolute;
       top: 0;
+      bottom:0;
       left: 2px;
       right: 2px;
       width: calc(100% - 6px);
-      height: auto;
-
-      resize: both;
-
+      height:auto;
+      max-height: 150px;
+      resize: none;
+      font: 400 13.3333px Arial;
+      opacity: 1;
+     ;
+    }
+    .grower{
+      visibility: hidden!important;
+      display:inline-block;
+      margin: 2px 0;
     }
   `;
 
@@ -147,7 +163,7 @@ export class TBodyRow extends LitElement{
         const col = idx;
         return html`
           <div class='table-cell'>
-
+            <span class="grower" style='visibility: hidden'>${ unsafeHTML( linebreakToBr(celldata)) }</span>
             <textarea @input='${(e:InputEvent) => this.updateField(e,row,col)}' class='table-cell-textarea'>${celldata}</textarea>
 
 
