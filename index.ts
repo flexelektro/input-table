@@ -1,1 +1,2 @@
-export { InputTable } from './src/InputTable.js';
+import { InputTable } from './src/InputTable';
+window.customElements.define('input-table', InputTable);

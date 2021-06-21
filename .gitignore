@@ -20,8 +20,11 @@
 /dist/
 /out-tsc/
 
-storybook-static
-
 READMEOLD.md
 
 _TODO.md
+
+.cache
+
+.idea
+

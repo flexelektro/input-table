@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My Blog</title>
+  <link rel='stylesheet' href='./simple.css'>
+  <link rel='stylesheet' href='./style.css'>
+</head>
+<body>
+<h1></h1>
+
+  <h1 style='margin-bottom: 0em; font-size: 70px'>input-table</h1>
+  <h3 style="margin:0"> the component for winners</h3>
+<h2>Pure</h2>
+<pre><code>    &lt;input-table onInput='logit(this,event)'&gt;&lt;/input-table&gt;
+</code></pre>
+<p><input-table></input-table></p>
+<h2>Only Data</h2>
+<pre><code>&lt;input-table data='[[&quot;Felix&quot;,&quot;Deimling&quot;,&quot;42&quot;]]' name='meinfeld2'&gt;&lt;/input-table&gt;
+</code></pre>
+<p><input-table data='[["Felix","Deimling","42"]]' name='meinfeld2'></input-table></p>
+<h2>Only Headers</h2>
+<pre><code>&lt;input-table header='[&quot;Vorname&quot;,&quot;Nachname&quot;,&quot;Alter&quot;,&quot;Vermögen&quot;]' name='meinfeld3'&gt;&lt;/input-table&gt;
+</code></pre>
+<p><input-table header='["Vorname","Nachname","Alter","Vermögen"]' name='meinfeld3'></input-table></p>
+<h2>With Headers</h2>
+<pre><code>&lt;input-table header='[&quot;Vorname&quot;,&quot;Nachname&quot;,&quot;Alter&quot;,&quot;Vermögen&quot;]' data='[[&quot;Felix&quot;,&quot;Deimling&quot;,&quot;42&quot;]]' name='meinfeld3'&gt;&lt;/input-table&gt;
+
+</code></pre>
+<h2>With fixedheader</h2>
+<pre><code>&lt;input-table fixedheader header='[&quot;Montag&quot;,&quot;Dienstag&quot;,&quot;Mittwoch&quot;,&quot;Donnerstag&quot;,&quot;Freitag&quot;]' data='[[&quot;&quot;]]' name='meinfeld4'&gt;&lt;/input-table&gt;
+sdd
+</code></pre>
+
+
+<script src="https://unpkg.com/@fdx/input-table@0.0.8"></script>
+</body>
+</html>
