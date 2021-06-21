@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang='en-GB'>
+<head>
+  <meta charset='utf-8'>
+  <link href='simple.css' rel='stylesheet' type='text/css'/>
+  <link href='style.css' rel='stylesheet' type='text/css'/>
+</head>
+<body>
+<script type='text/javascript'>
+
+  function logit(that,e){
+    console.log(e)
+  }
+
+</script>
+<div id='demo'>
+
+  <h1 style='margin-bottom: 0em; font-size: 70px'>input-table</h1>
+  <h3 style="margin:0"> the component for winners</h3>
+
+
+  <h2>Pure</h2>
+
+  <code>
+    <input-table onInput='logit(this,event)'></input-table>
+  </code>
+
+  <br>
+  <br>
+
+  <h2>Only Data</h2>
+
+  <input-table data='[["Felix","Deimling","42"]]' name='meinfeld2'></input-table>
+
+
+  <br>
+  <br>
+
+  <h2>Only Headers</h2>
+  <input-table header='["Vorname","Nachname","Alter","Vermögen"]' name='meinfeld3'></input-table>
+
+  <br>
+  <br>
+
+  <h2>With Headers</h2>
+  <input-table header='["Vorname","Nachname","Alter","Vermögen"]' data='[["Felix","Deimling","42"]]' name='meinfeld3'></input-table>
+
+  <br>
+  <br>
+
+  <h2>With fixedheader</h2>
+  <input-table fixedheader header='["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"]' data='[[""]]' name='meinfeld4'></input-table>
+
+
+</div>
+
+<script type='module'>
+  import '../dist/input-table';
+</script>
+</body>
+</html>

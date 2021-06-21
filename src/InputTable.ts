@@ -115,11 +115,6 @@ export class InputTable extends LitElement{
     `
   }
 
-  toggleHasHeader(e: InputEvent){
-    this.controller.hasHeader = ((e.target as HTMLInputElement).checked);
-  }
-
-
   render(){
     return html`
       <style>

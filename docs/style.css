@@ -1,0 +1,18 @@
+body {
+  background: pink;
+  max-width: 1024px;
+}
+
+h1{
+  color:yellow;
+}
+
+#demo{
+  margin:0 auto;
+  padding: 0 0px;
+  width: 100%;
+}
+
+th {
+  border: 2px solid green;
+}
