@@ -34,13 +34,19 @@ title: My Rad Blog
 <input-table header='["Vorname","Nachname","Alter","Vermögen"]' name='meinfeld3'></input-table>
 ```
 
-<input-table header='["Vorname","Nachname","Alter","Vermögen"]' name='meinfeld3'></input-table>
+<input-table header='["Vorname","Nachname","Alter","Vermögen"]' 
+             name='meinfeld3'></input-table>
 
 ## With Headers
 ```
-<input-table header='["Vorname","Nachname","Alter","Vermögen"]' data='[["Felix","Deimling","42"]]' name='meinfeld3'></input-table>
+<input-table header='["Vorname","Nachname","Alter","Vermögen"]' 
+             data='[["Felix","Deimling","42"]]' 
+             name='meinfeld3'>
+</input-table>
 
 ```
+
+<input-table header='["Vorname","Nachname","Alter","Vermögen"]' data='[["Felix","Deimling","42"]]' name='meinfeld3'></input-table>
 
 
 ## With fixedheader
@@ -48,6 +54,8 @@ title: My Rad Blog
 <input-table fixedheader header='["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"]' data='[[""]]' name='meinfeld4'></input-table>
 sdd
 ```
+
+<input-table fixedheader header='["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"]' data='[[""]]' name='meinfeld4'></input-table>
 
 
 
