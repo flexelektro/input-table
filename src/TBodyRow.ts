@@ -124,7 +124,6 @@ export class TBodyRow extends LitElement{
   render(){
     const data = JSON.parse(this.row);
     const row = this.index;
-    console.log(this.fixedheader)
     return html`
       <div class='empty'>
         ${ this.index == 0 ? html`

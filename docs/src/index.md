@@ -8,12 +8,18 @@ title: My Rad Blog
 
 ## Pure
 
+<script>
+  function logit(that,e){
+  console.log("LOGIT",that,e);
+}
+</script>
+
 ```
     <input-table onInput='logit(this,event)'></input-table>
 ```
-
-<input-table></input-table>
-
+<div >
+<input-table  onMega="console.log('lol')" onInput='logit(this,event)'></input-table>
+</div>
 
 ## Only Data
 

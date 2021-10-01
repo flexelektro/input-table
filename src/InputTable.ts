@@ -62,6 +62,7 @@ export class InputTable extends LitElement{
   name: string = "";
 
   firstUpdated(map: any){
+    this.controller.fullEl = this.$fullelement;
   }
 
   public connectedCallback(){

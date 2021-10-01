@@ -1,5 +1,5 @@
 import { ReactiveController, ReactiveControllerHost } from 'lit';
-
+import { InputTable } from "./InputTable"
 type IDataRow = (string | number)[];
 type IData = IDataRow[];
 
@@ -13,6 +13,8 @@ export class TableController implements ReactiveController{
   public _hasHeader: boolean = true;
   private _header: (string | number)[] = [];
   private _data: IData = [];
+  public fullEl?: HTMLDivElement;
+  public onmega?: Function;
 
   set header(values: IDataRow){
     this._header = values;
@@ -59,9 +61,25 @@ export class TableController implements ReactiveController{
     return max;
   }
 
+  didChange(){
+
+    if(this.fullEl){
+      const ev = new CustomEvent('change', {
+          detail: { value: this.data },
+          bubbles: true,
+          composed: true,
+          cancelable: true
+        });
+
+      (this.host as any).data = this._data;
+      (this.host as any).dispatchEvent(ev);
+    }
+  }
+
   cleanUp(){
     this._data = this.cleanupData(this._data);
     this._header = this.cleanUpHeaders(this._header)
+    this.didChange();
     this.host.requestUpdate();
   }
 
@@ -161,6 +179,7 @@ export class TableController implements ReactiveController{
     const col = e.detail.col;
     const value = e.detail.value;
     this._data[row][col] = value;
+    this.didChange()
 
     this.host.requestUpdate();
 
@@ -172,6 +191,7 @@ export class TableController implements ReactiveController{
     const col = e.detail.col;
     const value = e.detail.value;
     this._header[col] = value;
+    this.didChange()
     this.host.requestUpdate();
 
   }
